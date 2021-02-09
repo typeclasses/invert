@@ -1,9 +1,8 @@
 module Map where
 
-import Data.Eq       ( Eq, (==) )
-import Data.Foldable ( foldl' )
+import Data.Eq       ( Eq )
 import Data.Hashable ( Hashable )
-import Data.Maybe    ( Maybe (Just, Nothing), maybe )
+import Data.Maybe    ( Maybe, maybe )
 import Data.Ord      ( Ord )
 
 import qualified Data.Foldable
@@ -16,7 +15,7 @@ import qualified Data.Map.Strict
     as OrdMap (lookup, singleton, empty, union, unionWith)
 
 import qualified Data.Sequence
-    as Seq (empty, singleton, (><), (|>))
+    as Seq (singleton, (><))
 
 data Map f a b = forall map.
   Map
@@ -29,27 +28,6 @@ data Map f a b = forall map.
 type SingleMap = Map Maybe
 
 type MultiMap = Map []
-
-seqSingleMap :: Eq a => SingleMap a b
-seqSingleMap = Map{ empty, singleton, union, lookup }
-  where
-    empty = Seq.empty
-    singleton a b = Seq.singleton (a, b)
-    union = (Seq.><)
-    lookup l a' = foldl' f Nothing l
-      where
-        f Nothing (a, b) = if (a == a') then Just b else Nothing
-        f (Just b) _ = Just b
-
-seqMultiMap :: Eq a => MultiMap a b
-seqMultiMap = Map{ empty, singleton, union, lookup }
-  where
-    empty = Seq.empty
-    singleton a b = Seq.singleton (a, b)
-    union = (Seq.><)
-    lookup l a' = Seq.toList (foldl' f Seq.empty l)
-      where
-        f bs (a, b) = if (a == a') then (Seq.|>) bs b else bs
 
 hashSingleMap :: (Eq a, Hashable a) => SingleMap a b
 hashSingleMap = Map{ empty, singleton, union, lookup }
