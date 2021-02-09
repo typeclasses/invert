@@ -56,37 +56,70 @@ This question determines the type of the function's inverse.
 
 For a function @(a -> b)@, we call @(a)@ its /domain/, and @(b)@ its /codomain/.
 
-  * In general, when you invert a 'function' of type @(a -> b)@, the type of the inverse is @(b -> [a])@. The result is a list because it contains all domain values that map to a given codomain value; there may be none, one, or many.
-  * If your function @(a -> b)@ is a 'bijection', you can invert it to get a function @(b -> a)@. Bijections are quite pleasing in this way.
-  * If no two domain values map to the same codomain value, then your function is an 'injection', and it has an inverse of type @(b -> 'Maybe' a)@.
-  * If every codomain value has some domain value that maps to it, then your function is a 'surjection', and it has an inverse of type @(b -> 'NonEmpty' a)@.
+  * In general, when you invert a 'function' of type @(a -> b)@,
+    the type of the inverse is @(b -> [a])@.
+    The result is a list because it contains all domain values that
+    map to a given codomain value; there may be none, one, or many.
 
-You are responsible for determining which is appropriate for a particular situation: 'function', 'bijection', 'injection', or 'surjection'. Choose carefully; the wrong choice may produce an inverse which is partial or incorrect.
+  * If your function @(a -> b)@ is a 'bijection',
+    you can invert it to get a function @(b -> a)@.
+    Bijections are quite pleasing in this way.
+
+  * If no two domain values map to the same codomain value,
+    then your function is an 'injection',
+    and it has an inverse of type @(b -> 'Maybe' a)@.
+
+  * If every codomain value has some domain value that maps to it,
+    then your function is a 'surjection',
+    and it has an inverse of type @(b -> 'NonEmpty' a)@.
+
+You are responsible for determining which is appropriate for a particular
+situation: 'function', 'bijection', 'injection', or 'surjection'.
+Choose carefully; the wrong choice may produce an inverse which is
+partial or incorrect.
 
 === 2. How can we produce a reasonably efficient inversion?
 
-The simplest inversion strategies, 'linearSearchLazy' and 'linearSearchStrict', apply the function to each element of the codomain, one by one. We call this a /linear search/ because the time required for each application has a linear correspondence with the size of the codomain.
+The simplest inversion strategies, 'linearSearchLazy' and 'linearSearchStrict',
+apply the function to each element of the codomain, one by one.
+We call this a /linear search/ because the time required for each
+application has a linear correspondence with the size of the codomain.
 
-  * 'linearSearchStrict' works by precomputing a strict sequence of @(b, a)@ pairs, one for each value of the codomain.
-  * 'linearSearchLazy' precomputes nothing at all. It is possible to use this stategy when the codomain is infinite.
+  * 'linearSearchStrict' works by precomputing a strict sequence
+    of @(b, a)@ pairs, one for each value of the codomain.
 
-Our other two strategies, 'binarySearch' and 'hashTable', work by building data structures that allow more efficient lookups.
+  * 'linearSearchLazy' precomputes nothing at all.
+    It is possible to use this stategy when the codomain is infinite.
 
-  * 'binarySearch' precomputes a binary search tree; the codomain must belong to the 'Ord' class.
-  * 'hashTable' precomputers a hash table; the codomain must belong to the 'Hashable' class.
+Our other two strategies, 'binarySearch' and 'hashTable',
+work by building data structures that allow more efficient lookups.
 
-The 'Hashable' class comes from "Data.Hashable" in the @hashable@ package. The class is re-exported by "Invert", which you may find convenient if your primary motivation for deriving 'Hashable' is to invert a function.
+  * 'binarySearch' precomputes a binary search tree;
+    the codomain must belong to the 'Ord' class.
+
+  * 'hashTable' precomputers a hash table;
+    the codomain must belong to the 'Hashable' class.
+
+The 'Hashable' class comes from "Data.Hashable" in the @hashable@ package.
+The class is re-exported by "Invert", which you may find convenient if
+your primary motivation for deriving 'Hashable' is to invert a function.
 
 === 3. How will you enumerate the codomain?
 
-Inverting a function @(a -> b)@ requires having a list of all possible values of domain @(a)@; from this, we can apply the function to every value to produce a list of @(a, b)@ pairs. This list that completely describes the function.
+Inverting a function @(a -> b)@ requires having a list of all
+possible values of domain @(a)@; from this, we can apply the
+function to every value to produce a list of @(a, b)@ pairs.
+This list completely describes the function.
 
 We suggest two approaches for automatically producing this list:
 
   * 'enumBounded' uses two stock-derivable classes, 'Enum' and 'Bounded'.
   * 'genum' uses GHC generics; it requires deriving 'Generic' and 'GEnum'.
 
-The 'Generic' class comes from "GHC.Generics", and the 'GEnum' class comes from "Generics.Deriving" in the @generic-deriving@ package. Both classes are re-exported by "Invert", which you may find convenient if your primary motivation for deriving 'GEnum' is to invert a function.
+The 'Generic' class comes from "GHC.Generics", and the 'GEnum' class
+comes from "Generics.Deriving" in the @generic-deriving@ package.
+Both classes are re-exported by "Invert", which you may find convenient
+if your primary motivation for deriving 'GEnum' is to invert a function.
 
 -}
 
@@ -106,7 +139,8 @@ bijection ::
     -> (a -> b)
                 -- ^ The function to invert.
                 --   __This function must be bijective!__
-                --   This means that every value in the codomain has exactly one value in the domain that maps to it.
+                --   This means that every value in the codomain has
+                --   exactly one value in the domain that maps to it.
     -> (b -> a)
                 -- ^ The inverse of the given function.
 
@@ -117,7 +151,8 @@ injection ::
     -> (a -> b)
                 -- ^ The function to invert.
                 --   __This function must be injective!__
-                --   This means that no two values in the domain map to the same value of the codomain.
+                --   This means that no two values in the domain map
+                --   to the same value of the codomain.
     -> (b -> Maybe a)
                 -- ^ The inverse of the given function.
 
@@ -128,7 +163,8 @@ surjection ::
     -> (a -> b)
                 -- ^ The function to invert.
                 --   __This function must be surjective!__
-                --   This means that every value in the codomain has at least one value in the domain that maps to it.
+                --   This means that every value in the codomain has
+                --   at least one value in the domain that maps to it.
     -> (b -> NonEmpty a)
                 -- ^ The inverse of the given function.
 
