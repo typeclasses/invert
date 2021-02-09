@@ -19,11 +19,11 @@ library
       , unordered-containers ^>= 0.2
       , generic-deriving ^>= 1.14
 
-test-suite examples
+test-suite billing-codes-example
     type: exitcode-stdio-1.0
     default-language: Haskell2010
     ghc-options: -Wall
-    main-is: examples.hs
+    main-is: billing-codes.hs
     hs-source-dirs: examples
     build-depends:
         base ^>= 4.14
