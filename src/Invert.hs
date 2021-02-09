@@ -114,7 +114,7 @@ possible values of domain @(a)@; from this, we can apply the
 function to every value to produce a list of tuples that
 completely describes the function.
 
-We suggest two approaches for automatically producing this list:
+We offer two suggestions for automatically producing this list:
 
   * 'enumBounded' uses two stock-derivable classes, 'Enum' and 'Bounded'.
   * 'genum' uses GHC generics; it requires deriving 'Generic' and 'GEnum'.
