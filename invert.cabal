@@ -40,7 +40,6 @@ library
         NoImplicitPrelude
       , NamedFieldPuns
       , ExistentialQuantification
-      , Safe
     build-depends:
         base ^>= 4.12 || ^>= 4.13 || ^>= 4.14
       , containers ^>=0.6
