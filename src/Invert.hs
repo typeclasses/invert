@@ -2,19 +2,20 @@
 
 module Invert
   (
-    -- * How to invert a function
-    -- $intro
+    -- * Overview
+    -- $overview
 
-    -- * 1. Types of functions to invert
+    -- * 1. Varieties of function
     function, bijection, injection, surjection,
 
-    -- * 2. Strategies for inverting
+    -- * 2. Inversion strategies
     linearSearchLazy, linearSearchStrict, binarySearch, hashTable,
-    -- ** What is a strategy?
-    Strategy, strategyOneAndAll, strategyAll,
 
-    -- * 3. Ways to enumerate domains
+    -- * 3. Domain enumeration
     enumBounded, genum,
+
+    -- * The Strategy type
+    Strategy, strategyAll, strategyOneAndAll,
 
     -- * Re-exports
     {- $reexports -}
@@ -44,20 +45,13 @@ import qualified Data.List         as List  ( lookup, map )
 import qualified Data.Maybe        as List  ( mapMaybe )
 import qualified Generics.Deriving as GEnum ( genum )
 
-
-{- $intro
+{- $overview
 
 There are three considerations when you're inverting a function:
 
-  1. Is the function is an injection, a surjection,
-       both (a bijection), or neither?
-
-  2. In what data structure will you store the list of
-       the function's mappings?
-
-  3. Can you produce a list of all values in the
-        function's domain?
-
+  1. Is it an injection, a surjection, both (a bijection), or neither?
+  2. What data structure do you want to use for efficient lookups?
+  3. Can you produce a list of all values in the function's domain?
 
 === 1. What sort of function do you have?
 
@@ -87,7 +81,6 @@ situation: 'function', 'bijection', 'injection', or 'surjection'.
 Choose carefully; the wrong choice may produce an inverse which is
 partial or incorrect.
 
-
 === 2. How can we produce a reasonably efficient inversion?
 
 The simplest inversion strategies, 'linearSearchLazy' and 'linearSearchStrict',
@@ -96,7 +89,7 @@ We call this a /linear search/ because the time required for each
 application has a linear correspondence with the size of the domain.
 
   * 'linearSearchStrict' works by precomputing a strict sequence
-    of @(b, a)@ pairs, one for each value of the domain.
+    of tuples, one for each value of the domain.
 
   * 'linearSearchLazy' precomputes nothing at all.
     It is possible to use this stategy when the domain is infinite.
@@ -113,7 +106,6 @@ work by building data structures that allow more efficient lookups.
 The 'Hashable' class comes from "Data.Hashable" in the @hashable@ package.
 The class is re-exported by "Invert", which you may find convenient if
 your primary motivation for deriving 'Hashable' is to invert a function.
-
 
 === 3. How will you enumerate the domain?
 
@@ -134,17 +126,14 @@ if your primary motivation for deriving 'GEnum' is to invert a function.
 
 -}
 
-
----  1. Types of functions to invert  ---
-
 function ::
-    Strategy b a
+    Strategy a b
     -> [a]        -- ^ A complete list of all the values of the domain.
     -> (a -> b)   -- ^ The function to invert.
     -> (b -> [a]) -- ^ The inverse of the given function.
 
 bijection ::
-    Strategy b a
+    Strategy a b
     -> [a]
                 -- ^ A complete list of all the values of the domain.
     -> (a -> b)
@@ -156,7 +145,7 @@ bijection ::
                 -- ^ The inverse of the given function.
 
 injection ::
-    Strategy b a
+    Strategy a b
     -> [a]
                 -- ^ A complete list of all the values of the domain.
     -> (a -> b)
@@ -168,7 +157,7 @@ injection ::
                 -- ^ The inverse of the given function.
 
 surjection ::
-    Strategy b a
+    Strategy a b
     -> [a]
                 -- ^ A complete list of all the values of the domain.
     -> (a -> b)
@@ -186,31 +175,42 @@ bijection (Strategy s _) as f = finagle . s (inverseEntries as f)
 surjection (Strategy _ s) as f = finagle . s (inverseEntries as f)
   where finagle = fromMaybe (error "Not a surjection!") . nonEmpty
 
+{- |
 
----  2. Strategies for inverting  ---
+    An inversion strategy is an approach for producing
+    the inverse of an @(a -> b)@ function.
 
-data Strategy b a =
+    All strategies produce the same results, but they
+    have operational differences that affect performance.
+
+    The "Invert" module provides several strategies.
+    If you want to design your own, use either
+    'strategyAll' or 'strategyOneAndAll'.
+
+-}
+
+data Strategy a b =
   Strategy
     ([(b, a)] -> b -> Maybe a)
     ([(b, a)] -> b -> [a])
 
-strategyOneAndAll ::
-    ([(b, a)] -> b -> Maybe a) -- ^ Find the first match
-    -> ([(b, a)] -> b -> [a]) -- ^ Find all matches
-    -> Strategy b a
-strategyOneAndAll = Strategy
-
 strategyAll ::
     ([(b, a)] -> b -> [a]) -- ^ Find all matches
-    -> Strategy b a
+    -> Strategy a b
 strategyAll all = strategyOneAndAll one all
   where
     one bas b = listToMaybe (all bas b)
 
+strategyOneAndAll ::
+    ([(b, a)] -> b -> Maybe a) -- ^ Find the first match
+    -> ([(b, a)] -> b -> [a]) -- ^ Find all matches
+    -> Strategy a b
+strategyOneAndAll = Strategy
+
 inverseEntries :: [a] -> (a -> b) -> [(b, a)]
 inverseEntries as f = List.map (\a -> (f a, a)) as
 
-mapStrategy :: Map Maybe b a -> Map [] b a -> Strategy b a
+mapStrategy :: Map Maybe b a -> Map [] b a -> Strategy a b
 mapStrategy one all = Strategy (f one) (f all)
   where
     f Map{ Map.empty, Map.singleton, Map.union, Map.lookup } =
@@ -223,7 +223,7 @@ mapStrategy one all = Strategy (f one) (f all)
 
 -}
 
-linearSearchLazy :: Eq b => Strategy b a
+linearSearchLazy :: Eq b => Strategy a b
 linearSearchLazy = Strategy one all
   where
     one bas b = List.lookup b bas
@@ -239,7 +239,7 @@ linearSearchLazy = Strategy one all
 
 -}
 
-linearSearchStrict :: Eq b => Strategy b a
+linearSearchStrict :: Eq b => Strategy a b
 linearSearchStrict = strategyAll f
   where
     f bas b = Vector.toList (Vector.mapMaybe (sndIfFstEq b) v)
@@ -257,7 +257,7 @@ sndIfFstEq x (b, a) = if b == x then Just a else Nothing
 
 -}
 
-binarySearch :: Ord b => Strategy b a
+binarySearch :: Ord b => Strategy a b
 binarySearch = mapStrategy Map.ordSingleMap Map.ordMultiMap
 
 {- |
@@ -268,11 +268,8 @@ binarySearch = mapStrategy Map.ordSingleMap Map.ordMultiMap
 
 -}
 
-hashTable :: (Eq b, Hashable b) => Strategy b a
+hashTable :: (Eq b, Hashable b) => Strategy a b
 hashTable = mapStrategy Map.hashSingleMap Map.hashMultiMap
-
-
----  3. Ways to enumerate domains  ---
 
 -- |
 -- 'enumBounded' can be a convenient way to enumerate
@@ -307,7 +304,6 @@ enumBounded = enumFromTo minBound maxBound
 
 genum :: GEnum a => [a]
 genum = GEnum.genum
-
 
 {- $reexports
 
