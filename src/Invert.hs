@@ -104,7 +104,7 @@ The 'Hashable' class comes from "Data.Hashable" in the @hashable@ package.
 The class is re-exported by "Invert", which you may find convenient if
 your primary motivation for deriving 'Hashable' is to invert a function.
 
-=== 3. How will you enumerate the codomain?
+=== 3. How will you enumerate the domain?
 
 Inverting a function @(a -> b)@ requires having a list of all
 possible values of domain @(a)@; from this, we can apply the
