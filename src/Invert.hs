@@ -226,8 +226,15 @@ hashTable = mapStrategy Map.hashSingleMap Map.hashMultiMap
 
 ---  3. Ways to enumerate domains  ---
 
+-- | 'enumBounded' can be a convenient way to enumerate
+-- the domain for a function that you want to invert.
+-- It uses two stock-derivable classes, 'Enum' and 'Bounded'.
 enumBounded :: (Enum b, Bounded b) => [b]
 enumBounded = enumFromTo minBound maxBound
 
+-- | 'genum' uses GHC generics; it requires deriving 'Generic'
+-- and 'GEnum'. The 'Generic' class comes from "GHC.Generics",
+-- and the 'GEnum' class comes from "Generics.Deriving" in the
+-- @generic-deriving@ package.
 genum :: GEnum b => [b]
 genum = GEnum.genum
