@@ -25,7 +25,8 @@ tested-with: GHC==8.10.3, GHC==8.8.4, GHC==8.6.5
 library
     default-language: Haskell2010
     ghc-options: -Wall
-    exposed-modules: Invert, Map
+    exposed-modules: Invert
+    other-modules: Map
     hs-source-dirs: src
     default-extensions:
         NoImplicitPrelude
