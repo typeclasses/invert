@@ -1,3 +1,5 @@
+{-# language Safe #-}
+
 module Invert
   (
     -- * How to invert a function
@@ -26,6 +28,8 @@ module Invert
 import qualified Map
 import Map (Map (Map))
 
+import qualified Vector
+
 import Data.Eq            ( Eq, (==) )
 import Data.Foldable      ( foldl' )
 import Data.Function      ( (.) )
@@ -43,8 +47,6 @@ import Prelude            ( Bounded, minBound, maxBound )
 import qualified Data.List         as List  ( lookup, map )
 import qualified Data.Maybe        as List  ( mapMaybe )
 import qualified Generics.Deriving as GEnum ( genum )
-
-import qualified Data.Vector as V
 
 
 ---  How function inversion works  ---
@@ -223,9 +225,9 @@ linearSearchLazy = Strategy one many
 linearSearchStrict :: Eq a => Strategy a b
 linearSearchStrict = strategyAll f
   where
-    f abs a = V.toList (V.mapMaybe (sndIfFstEq a) v)
+    f abs a = Vector.toList (Vector.mapMaybe (sndIfFstEq a) v)
       where
-        v = V.fromList abs
+        v = Vector.fromList abs
 
 sndIfFstEq :: Eq a => a -> (a, b) -> Maybe b
 sndIfFstEq a' (a, b) = if a == a' then Just b else Nothing

@@ -1,3 +1,5 @@
+{-# language Safe #-}
+
 module Map where
 
 import Data.Eq       ( Eq )
