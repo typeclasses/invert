@@ -3,7 +3,7 @@
 module Invert
   (
     -- * How to invert a function
-    -- $how
+    -- $intro
 
     -- * 1. Types of functions to invert
     function, bijection, injection, surjection,
@@ -16,14 +16,13 @@ module Invert
     -- * 3. Ways to enumerate domains
     enumBounded, genum,
 
-    -- * Re-reexports
+    -- * Re-exports
     {- $reexports -}
-    -- ** For @genum@
-    Generic, GEnum,
-    -- ** For @hashTable@
-    Hashable
+    module Invert.Reexport
 
   ) where
+
+import Invert.Reexport
 
 import qualified Map
 import Map (Map (Map))
@@ -33,13 +32,10 @@ import qualified Vector
 import Data.Eq            ( Eq, (==) )
 import Data.Foldable      ( foldl' )
 import Data.Function      ( (.) )
-import Data.Hashable      ( Hashable )
 import Data.List.NonEmpty ( NonEmpty, nonEmpty )
 import Data.Maybe         ( Maybe (Just, Nothing), fromMaybe, listToMaybe )
 import Data.Ord           ( Ord )
 import Data.Tuple         ( uncurry )
-import Generics.Deriving  ( GEnum )
-import GHC.Generics       ( Generic )
 import Prelude            ( error )
 import Prelude            ( Enum, enumFromTo )
 import Prelude            ( Bounded, minBound, maxBound )
@@ -49,11 +45,19 @@ import qualified Data.Maybe        as List  ( mapMaybe )
 import qualified Generics.Deriving as GEnum ( genum )
 
 
----  How function inversion works  ---
+{- $intro
 
-{- $how
+There are three considerations when you're inverting a function:
 
-There are three things you need to decide when you're inverting a function.
+  1. Is the function is an injection, a surjection,
+       both (a bijection), or neither?
+
+  2. In what data structure will you store the list of
+       the function's mappings?
+
+  3. Can you produce a list of all values in the
+        function's domain?
+
 
 === 1. What sort of function do you have?
 
@@ -83,6 +87,7 @@ situation: 'function', 'bijection', 'injection', or 'surjection'.
 Choose carefully; the wrong choice may produce an inverse which is
 partial or incorrect.
 
+
 === 2. How can we produce a reasonably efficient inversion?
 
 The simplest inversion strategies, 'linearSearchLazy' and 'linearSearchStrict',
@@ -109,12 +114,13 @@ The 'Hashable' class comes from "Data.Hashable" in the @hashable@ package.
 The class is re-exported by "Invert", which you may find convenient if
 your primary motivation for deriving 'Hashable' is to invert a function.
 
+
 === 3. How will you enumerate the domain?
 
 Inverting a function @(a -> b)@ requires having a list of all
 possible values of domain @(a)@; from this, we can apply the
-function to every value to produce a list of @(a, b)@ pairs.
-This list completely describes the function.
+function to every value to produce a list of tuples that
+completely describes the function.
 
 We suggest two approaches for automatically producing this list:
 
@@ -183,71 +189,93 @@ surjection (Strategy _ s) as f = finagle . s (inverseEntries as f)
 
 ---  2. Strategies for inverting  ---
 
-data Strategy a b =
+data Strategy b a =
   Strategy
-    ([(a, b)] -> a -> Maybe b)
-    ([(a, b)] -> a -> [b])
+    ([(b, a)] -> b -> Maybe a)
+    ([(b, a)] -> b -> [a])
 
 strategyOneAndAll ::
-    ([(a, b)] -> a -> Maybe b) -- ^ Find the first match
-    -> ([(a, b)] -> a -> [b]) -- ^ Find all matches
-    -> Strategy a b
+    ([(b, a)] -> b -> Maybe a) -- ^ Find the first match
+    -> ([(b, a)] -> b -> [a]) -- ^ Find all matches
+    -> Strategy b a
 strategyOneAndAll = Strategy
 
 strategyAll ::
-    ([(a, b)] -> a -> [b]) -- ^ Find all matches
-    -> Strategy a b
-strategyAll many = strategyOneAndAll one many
+    ([(b, a)] -> b -> [a]) -- ^ Find all matches
+    -> Strategy b a
+strategyAll all = strategyOneAndAll one all
   where
-    one abs a = listToMaybe (many abs a)
+    one bas b = listToMaybe (all bas b)
 
 inverseEntries :: [a] -> (a -> b) -> [(b, a)]
 inverseEntries as f = List.map (\a -> (f a, a)) as
 
-mapStrategy :: Map Maybe a b -> Map [] a b -> Strategy a b
-mapStrategy x y = Strategy (f x) (f y)
+mapStrategy :: Map Maybe b a -> Map [] b a -> Strategy b a
+mapStrategy one all = Strategy (f one) (f all)
   where
     f Map{ Map.empty, Map.singleton, Map.union, Map.lookup } =
         lookup . foldl' union empty . List.map (uncurry singleton)
 
--- | A function inversion strategy that precomputes nothing at all.
--- It is possible to use this stategy when the codomain is infinite.
-linearSearchLazy :: Eq a => Strategy a b
-linearSearchLazy = Strategy one many
-  where
-    one abs a = List.lookup a abs
-    many abs a = List.mapMaybe (sndIfFstEq a) abs
+{- |
 
--- | A function inversation strategy that works by precomputing a
--- strict sequence of @(b, a)@ pairs, one for each value of the codomain.
--- For larger functions, it may be preferable to use 'binarySearch' or
--- 'hashTable' instead to get a more efficient inverse.
-linearSearchStrict :: Eq a => Strategy a b
+    A function inversion strategy that precomputes nothing at all.
+    It is possible to use this stategy when the domain @(a)@ is infinite.
+
+-}
+
+linearSearchLazy :: Eq b => Strategy b a
+linearSearchLazy = Strategy one all
+  where
+    one bas b = List.lookup b bas
+    all bas b = List.mapMaybe (sndIfFstEq b) bas
+
+{- |
+
+    A function inversation strategy that works by precomputing a
+    strict sequence of tuples, one for each value of the domain @(a)@.
+
+    For larger functions, it may be preferable to use 'binarySearch' or
+    'hashTable' instead to get a more efficient inverse.
+
+-}
+
+linearSearchStrict :: Eq b => Strategy b a
 linearSearchStrict = strategyAll f
   where
-    f abs a = Vector.toList (Vector.mapMaybe (sndIfFstEq a) v)
+    f bas b = Vector.toList (Vector.mapMaybe (sndIfFstEq b) v)
       where
-        v = Vector.fromList abs
+        v = Vector.fromList bas
 
-sndIfFstEq :: Eq a => a -> (a, b) -> Maybe b
-sndIfFstEq a' (a, b) = if a == a' then Just b else Nothing
+sndIfFstEq :: Eq b => b -> (b, a) -> Maybe a
+sndIfFstEq x (b, a) = if b == x then Just a else Nothing
 
--- | A function inversion strategy that works by precomputing
--- a binary search tree. The data structure imposes the
--- requirement that the codomain belongs to the 'Ord' class.
-binarySearch :: Ord a => Strategy a b
+{- |
+
+    A function inversion strategy that works by precomputing
+    a binary search tree. The data structure imposes the
+    requirement that the codomain belongs to the 'Ord' class.
+
+-}
+
+binarySearch :: Ord b => Strategy b a
 binarySearch = mapStrategy Map.ordSingleMap Map.ordMultiMap
 
--- | A function inversion strategy that works by precomputing
--- a hash table. The data structure imposes the requirement
--- that the codomain belongs to the 'Hashable' class.
-hashTable :: (Eq a, Hashable a) => Strategy a b
+{- |
+
+    A function inversion strategy that works by precomputing
+    a hash table. The data structure imposes the requirement
+    that the codomain belongs to the 'Hashable' class.
+
+-}
+
+hashTable :: (Eq b, Hashable b) => Strategy b a
 hashTable = mapStrategy Map.hashSingleMap Map.hashMultiMap
 
 
 ---  3. Ways to enumerate domains  ---
 
--- | 'enumBounded' can be a convenient way to enumerate
+-- |
+-- 'enumBounded' can be a convenient way to enumerate
 -- the domain for a function that you want to invert.
 -- It uses two stock-derivable classes, 'Enum' and 'Bounded'.
 --
@@ -257,10 +285,11 @@ hashTable = mapStrategy Map.hashSingleMap Map.hashMultiMap
 --   > deriving (Enum, Bounded)
 --
 
-enumBounded :: (Enum b, Bounded b) => [b]
+enumBounded :: (Enum a, Bounded a) => [a]
 enumBounded = enumFromTo minBound maxBound
 
--- | 'genum' uses GHC generics; it requires deriving 'Generic'
+-- |
+-- 'genum' uses GHC generics; it requires deriving 'Generic'
 -- and 'GEnum'. The 'Generic' class comes from "GHC.Generics",
 -- and the 'GEnum' class comes from "Generics.Deriving" in the
 -- @generic-deriving@ package.
@@ -276,7 +305,7 @@ enumBounded = enumFromTo minBound maxBound
 --   > deriving anyclass GEnum
 --
 
-genum :: GEnum b => [b]
+genum :: GEnum a => [a]
 genum = GEnum.genum
 
 
@@ -285,5 +314,10 @@ genum = GEnum.genum
 This module provides a few definitions that come directly from
 other packages. These are here to let you conveniently derive
 'Hashable' and 'GEnum' with only the "Invert" module imported.
+
+List of re-exports:
+
+  - __'Hashable'__ (for the 'hashTable' inversion strategy)
+  - __'Generic'__ and __'GEnum'__ (for the 'genum' domain enumeration approach)
 
 -}
