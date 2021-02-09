@@ -86,15 +86,15 @@ partial or incorrect.
 === 2. How can we produce a reasonably efficient inversion?
 
 The simplest inversion strategies, 'linearSearchLazy' and 'linearSearchStrict',
-apply the function to each element of the codomain, one by one.
+apply the function to each element of the domain, one by one.
 We call this a /linear search/ because the time required for each
-application has a linear correspondence with the size of the codomain.
+application has a linear correspondence with the size of the domain.
 
   * 'linearSearchStrict' works by precomputing a strict sequence
-    of @(b, a)@ pairs, one for each value of the codomain.
+    of @(b, a)@ pairs, one for each value of the domain.
 
   * 'linearSearchLazy' precomputes nothing at all.
-    It is possible to use this stategy when the codomain is infinite.
+    It is possible to use this stategy when the domain is infinite.
 
 Our other two strategies, 'binarySearch' and 'hashTable',
 work by building data structures that allow more efficient lookups.
