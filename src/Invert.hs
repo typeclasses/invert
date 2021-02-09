@@ -227,7 +227,7 @@ mapStrategy one all = Strategy (f one) (f all)
 {- |
 
     A function inversion strategy that precomputes nothing at all.
-    It is possible to use this stategy when the domain @(a)@ is infinite.
+    It is possible to use this stategy when the domain is infinite.
 
 -}
 
@@ -240,7 +240,7 @@ linearSearchLazy = Strategy one all
 {- |
 
     A function inversation strategy that works by precomputing a
-    strict sequence of tuples, one for each value of the domain @(a)@.
+    strict sequence of tuples, one for each value of the domain.
 
     For larger functions, it may be preferable to use 'binarySearch' or
     'hashTable' instead to get a more efficient inverse.
