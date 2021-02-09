@@ -6,14 +6,8 @@ build-type: Simple
 library
     default-language: Haskell2010
     ghc-options: -Wall
-    exposed-modules:
-        Invert.Bijection
-      , Invert.Domain
-      , Invert.Function
-      , Invert.Injection
-      , Invert.Surjection
-    other-modules:
-        Invert.Tools
+    exposed-modules: Invert
+    other-modules: Map
     default-extensions:
         NoImplicitPrelude
       , NamedFieldPuns
