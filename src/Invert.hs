@@ -15,10 +15,12 @@ module Invert
     enumBounded, genum,
 
     -- * The Strategy type
-    Strategy, strategyAll, strategyOneAndAll,
+    Strategy,
+    -- $strategyCreation
+    strategyAll, strategyOneAndAll,
 
     -- * Re-exports
-    {- $reexports -}
+    -- $reexports
     module Invert.Reexport
 
   ) where
@@ -183,16 +185,22 @@ surjection (Strategy _ s) as f = finagle . s (inverseEntries as f)
     All strategies produce the same results, but they
     have operational differences that affect performance.
 
-    The "Invert" module provides several strategies.
-    If you want to design your own, use either
-    'strategyAll' or 'strategyOneAndAll'.
-
 -}
 
 data Strategy a b =
   Strategy
     ([(b, a)] -> b -> Maybe a)
     ([(b, a)] -> b -> [a])
+
+{- $strategyCreation
+
+    === Defining your own strategies
+
+    If you want to design your own strategy instead
+    of using one provided by this module, use either
+    'strategyAll' or 'strategyOneAndAll'.
+
+-}
 
 strategyAll ::
     ([(b, a)] -> b -> [a]) -- ^ Find all matches
