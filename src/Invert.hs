@@ -1,6 +1,6 @@
 module Invert
   (
-    -- * How function inversion works
+    -- * How to invert a function
     -- $how
 
     -- * 1. Types of functions to invert
@@ -13,8 +13,12 @@ module Invert
 
     -- * 3. Ways to enumerate domains
     enumBounded, genum,
-    -- ** Re-reexports for genum
-    Generic, GEnum
+
+    -- * Re-reexports
+    -- ** For @genum@
+    Generic, GEnum,
+    -- ** For @hashTable@
+    Hashable
 
   ) where
 
@@ -71,6 +75,8 @@ Our other two strategies, 'binarySearch' and 'hashTable', work by building data 
   * 'binarySearch' precomputes a binary search tree; the codomain must belong to the 'Ord' class.
   * 'hashTable' precomputers a hash table; the codomain must belong to the 'Hashable' class.
 
+The 'Hashable' class comes from "Data.Hashable" in the @hashable@ package. The class is re-exported by "Invert", which you may find convenient if your primary motivation for deriving 'Hashable' is to invert a function.
+
 === 3. How will you enumerate the codomain?
 
 Inverting a function @(a -> b)@ requires having a list of all possible values of domain @(a)@; from this, we can apply the function to every value to produce a list of @(a, b)@ pairs. This list that completely describes the function.
@@ -79,6 +85,8 @@ We suggest two approaches for automatically producing this list:
 
   * 'enumBounded' uses two stock-derivable classes, 'Enum' and 'Bounded'.
   * 'genum' uses GHC generics; it requires deriving 'Generic' and 'GEnum'.
+
+The 'Generic' class comes from "GHC.Generics", and the 'GEnum' class comes from "Generics.Deriving" in the @generic-deriving@ package. Both classes are re-exported by "Invert", which you may find convenient if your primary motivation for deriving 'GEnum' is to invert a function.
 
 -}
 
