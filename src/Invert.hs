@@ -9,7 +9,7 @@ module Invert
     -- * 2. Strategies for inverting
     linearSearchLazy, linearSearchStrict, binarySearch, hashTable,
     -- ** What is a strategy?
-    Strategy, strategy,
+    Strategy, strategyOneAndAll, strategyAll,
 
     -- * 3. Ways to enumerate domains
     enumBounded, genum,
@@ -186,8 +186,16 @@ data Strategy a b =
     ([(a, b)] -> a -> Maybe b)
     ([(a, b)] -> a -> [b])
 
-strategy :: ([(a, b)] -> a -> [b]) -> Strategy a b
-strategy many = Strategy one many
+strategyOneAndAll ::
+    ([(a, b)] -> a -> Maybe b) -- ^ Find the first match
+    -> ([(a, b)] -> a -> [b]) -- ^ Find all matches
+    -> Strategy a b
+strategyOneAndAll = Strategy
+
+strategyAll ::
+    ([(a, b)] -> a -> [b]) -- ^ Find all matches
+    -> Strategy a b
+strategyAll many = strategyOneAndAll one many
   where
     one abs a = listToMaybe (many abs a)
 
@@ -213,7 +221,7 @@ linearSearchLazy = Strategy one many
 -- For larger functions, it may be preferable to use 'binarySearch' or
 -- 'hashTable' instead to get a more efficient inverse.
 linearSearchStrict :: Eq a => Strategy a b
-linearSearchStrict = strategy f
+linearSearchStrict = strategyAll f
   where
     f abs a = V.toList (V.mapMaybe (sndIfFstEq a) v)
       where
