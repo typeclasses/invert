@@ -3,6 +3,7 @@ cabal-version: 2.0
 name: invert
 version: 1.0
 synopsis: Automatically generate a function's inverse
+category: Functions
 
 description:
     This library deals with computing a function's inverse.
