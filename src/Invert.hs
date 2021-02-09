@@ -196,18 +196,30 @@ mapStrategy x y = Strategy (f x) (f y)
   where f Map{ Map.empty, Map.singleton, Map.union, Map.lookup } =
             lookup . foldl' union empty . List.map (uncurry singleton)
 
+-- | A function inversion strategy that precomputes nothing at all.
+-- It is possible to use this stategy when the codomain is infinite.
 linearSearchLazy :: Eq a => Strategy a b
 linearSearchLazy = Strategy one many
   where one abs a' = List.lookup a' abs
         many abs a' = List.mapMaybe f abs
             where f (a, b) = if a == a' then Just b else Nothing
 
+-- | A function inversation strategy that works by precomputing a
+-- strict sequence of @(b, a)@ pairs, one for each value of the codomain.
+-- For larger functions, it may be preferable to use 'binarySearch' or
+-- 'hashTable' instead to get a more efficient inverse.
 linearSearchStrict :: Eq a => Strategy a b
 linearSearchStrict = mapStrategy Map.seqSingleMap Map.seqMultiMap
 
+-- | A function inversion strategy that works by precomputing
+-- a binary search tree. The data structure imposes the
+-- requirement that the codomain belongs to the 'Ord' class.
 binarySearch :: Ord a => Strategy a b
 binarySearch = mapStrategy Map.ordSingleMap Map.ordMultiMap
 
+-- | A function inversion strategy that works by precomputing
+-- a hash table. The data structure imposes the requirement
+-- that the codomain belongs to the 'Hashable' class.
 hashTable :: (Eq a, Hashable a) => Strategy a b
 hashTable = mapStrategy Map.hashSingleMap Map.hashMultiMap
 
