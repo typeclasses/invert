@@ -1,7 +1,7 @@
 cabal-version: 2.0
 
 name: invert
-version: 0
+version: 1.0
 synopsis: Automatically generate a function's inverse
 
 description:
