@@ -8,7 +8,7 @@ module Invert
 
     -- * 2. Strategies for inverting
     linearSearchLazy, linearSearchStrict, binarySearch, hashTable,
-    -- ** What exactly is a Strategy?
+    -- ** What is a strategy?
     Strategy, strategy,
 
     -- * 3. Ways to enumerate domains
