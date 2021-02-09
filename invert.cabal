@@ -18,6 +18,11 @@ description:
       * The functions for inverting injections, surjections,
         and bijections require some care to use correctly,
         because the library does not verify these properties.
+    .
+    The main purpose of this library is to provide documentation
+    and convenience. It does not contain a great quantity of code,
+    so a user hesitant to incur a dependency on the package might
+    well choose only to read and borrow its techniques.
 
 build-type: Simple
 tested-with: GHC==8.10.3, GHC==8.8.4, GHC==8.6.5
