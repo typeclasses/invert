@@ -15,6 +15,7 @@ module Invert
     enumBounded, genum,
 
     -- * Re-reexports
+    {- $reexports -}
     -- ** For @genum@
     Generic, GEnum,
     -- ** For @hashTable@
@@ -229,6 +230,13 @@ hashTable = mapStrategy Map.hashSingleMap Map.hashMultiMap
 -- | 'enumBounded' can be a convenient way to enumerate
 -- the domain for a function that you want to invert.
 -- It uses two stock-derivable classes, 'Enum' and 'Bounded'.
+--
+-- To derive the required typeclass instances, add the
+-- following deriving clause to the type's definition:
+--
+--   > deriving (Enum, Bounded)
+--
+
 enumBounded :: (Enum b, Bounded b) => [b]
 enumBounded = enumFromTo minBound maxBound
 
@@ -236,5 +244,26 @@ enumBounded = enumFromTo minBound maxBound
 -- and 'GEnum'. The 'Generic' class comes from "GHC.Generics",
 -- and the 'GEnum' class comes from "Generics.Deriving" in the
 -- @generic-deriving@ package.
+--
+-- To derive the required typeclass instances, enable the
+-- following language extensions:
+--
+--   > {-# language DeriveGeneric, DeriveAnyClass, DerivingStrategies #-}
+--
+-- Then add the following deriving clauses to the type's definition:
+--
+--   > deriving stock Generic
+--   > deriving anyclass GEnum
+--
+
 genum :: GEnum b => [b]
 genum = GEnum.genum
+
+
+{- $reexports
+
+This module provides a few definitions that come directly from
+other packages. These are here to let you conveniently derive
+'Hashable' and 'GEnum' with only the "Invert" module imported.
+
+-}
