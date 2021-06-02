@@ -37,6 +37,8 @@ bug-reports: https://github.com/typeclasses/invert/issues
 license: Apache-2.0
 license-file: license.txt
 
+extra-source-files: changelog.md
+
 library
     default-language: Haskell2010
     ghc-options: -Wall
