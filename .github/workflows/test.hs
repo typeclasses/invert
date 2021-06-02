@@ -13,7 +13,8 @@ main =
                   , "--constraint=vector == 0.12.0.1"
                   ]
       "8.8.4"  -> callProcess "cabal" ["test", "all"]
-      "8.10.3" -> callProcess "cabal" ["test", "all"
+      "8.10.3" -> callProcess "cabal" ["test", "all"]
+      "9.0.1"  -> callProcess "cabal" ["test", "all"
                   , "--constraint=containers == 0.6.4.1"
                   , "--constraint=criterion == 1.5.9.0"
                   , "--constraint=hashable == 1.3.2.0"
