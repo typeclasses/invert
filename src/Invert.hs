@@ -49,15 +49,15 @@ import qualified Generics.Deriving as GEnum ( genum )
 
 {- $overview
 
-There are three considerations when you're inverting a function:
+There are three considerations when you’re inverting a function:
 
   1. Is it an injection, a surjection, both (a bijection), or neither?
   2. What data structure do you want to use for efficient lookups?
-  3. Can you produce a list of all values in the function's domain?
+  3. Can you produce a list of all values in the function’s domain?
 
 === 1. What sort of function do you have?
 
-This question determines the type of the function's inverse.
+This question determines the type of the function’s inverse.
 
 For a function @(a -> b)@, we call @(a)@ its /domain/, and @(b)@ its /codomain/.
 
@@ -285,7 +285,7 @@ hashTable = mapStrategy Map.hashSingleMap Map.hashMultiMap
 -- It uses two stock-derivable classes, 'Enum' and 'Bounded'.
 --
 -- To derive the required typeclass instances, add the
--- following deriving clause to the type's definition:
+-- following deriving clause to the type’s definition:
 --
 --   > deriving (Enum, Bounded)
 --
@@ -304,7 +304,7 @@ enumBounded = enumFromTo minBound maxBound
 --
 --   > {-# language DeriveGeneric, DeriveAnyClass, DerivingStrategies #-}
 --
--- Then add the following deriving clauses to the type's definition:
+-- Then add the following deriving clauses to the type’s definition:
 --
 --   > deriving stock Generic
 --   > deriving anyclass GEnum
