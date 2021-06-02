@@ -2,18 +2,18 @@ cabal-version: 2.0
 
 name: invert
 version: 1.0
-synopsis: Automatically generate a function's inverse
+synopsis: Automatically generate a function’s inverse
 category: Functions
 
 description:
-    This library deals with computing a function's inverse.
+    This library deals with computing a function’s inverse.
     This is, of course, not possible in general, so the
     applicability of this library comes with some caveats:
     .
-      * The function's domain must be enumerable, and
+      * The function’s domain must be enumerable, and
         preferably rather small. We provide a few suggestions
         and utilities for how to enumerate the domain.
-      * The function's codomain must belong to the @Eq@ class.
+      * The function’s codomain must belong to the @Eq@ class.
         An @Ord@ or @Hashable@ instance is also nice, to
         accommodate a data structure for efficient lookups.
       * The functions for inverting injections, surjections,
