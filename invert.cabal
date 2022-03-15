@@ -64,7 +64,7 @@ test-suite billing-codes-example
     hs-source-dirs: examples
     build-depends: invert
 
-benchmark benchmarks
+benchmark invert-benchmark
     import: base
     default-extensions: NumericUnderscores
     type: exitcode-stdio-1.0
