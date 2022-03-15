@@ -1,22 +1,26 @@
-import Criterion.Main
-import Criterion.Types
+import Criterion.Main (defaultMainWith, defaultConfig, bench, bgroup, whnf, Benchmark)
+import Criterion.Types (Config (reportFile))
 
 import qualified Invert as I
 
+sizes :: [Integer]
 sizes = [100, 500, 2_000, 5_000] :: [Integer]
 
+invertGroup :: String -> I.Strategy Integer Integer -> Benchmark
 invertGroup name strategy =
     bgroup name $
         fmap (invertBench strategy) sizes
 
+invertBench :: (Show b, Enum b, Num b) => I.Strategy b b -> b -> Benchmark
 invertBench strategy size =
     bench (show size) $
         let
-            f = I.function strategy [1 .. size] (* (2 ^ 10))
-            f' x = sum (foldMap (\e -> f (x ^ e)) [0 .. 10])
+            f = I.function strategy [1 .. size] (* (2 ^ (10 :: Integer)))
+            f' x = sum (foldMap (\e -> f (x ^ (e :: Integer))) [0 .. 10])
         in
             whnf f' size
 
+groups :: [Benchmark]
 groups =
     [ invertGroup "linearSearchLazy" I.linearSearchLazy
     , invertGroup "linearSearchStrict" I.linearSearchStrict
@@ -24,9 +28,11 @@ groups =
     , invertGroup "hashTable" I.hashTable
     ]
 
+config :: Config
 config =
     defaultConfig
         { reportFile = Just "bench.html"
         }
 
+main :: IO ()
 main = defaultMainWith config groups
