@@ -38,16 +38,9 @@ license-file: license.txt
 
 extra-source-files: changelog.md
 
-library
+common base
     default-language: Haskell2010
     ghc-options: -Wall
-    exposed-modules: Invert, Invert.Reexport
-    other-modules: Map, Vector
-    hs-source-dirs: src
-    default-extensions:
-        NoImplicitPrelude
-      , NamedFieldPuns
-      , ExistentialQuantification
     build-depends:
         base ^>= 4.12 || ^>= 4.13 || ^>= 4.14 || ^>= 4.15
       , containers ^>= 0.6
@@ -56,24 +49,29 @@ library
       , generic-deriving ^>= 1.14
       , vector ^>= 0.12
 
+library
+    import: base
+    exposed-modules: Invert, Invert.Reexport
+    other-modules: Map, Vector
+    hs-source-dirs: src
+    default-extensions:
+        NoImplicitPrelude
+      , NamedFieldPuns
+      , ExistentialQuantification
+
 test-suite billing-codes-example
+    import: base
     type: exitcode-stdio-1.0
-    default-language: Haskell2010
-    ghc-options: -Wall
     main-is: billing-codes.hs
     hs-source-dirs: examples
-    build-depends:
-        base ^>= 4.12 || ^>= 4.13 || ^>= 4.14 || ^>= 4.15
-      , invert
+    build-depends: invert
 
 benchmark benchmarks
-    default-language: Haskell2010
+    import: base
     default-extensions: NumericUnderscores
     type: exitcode-stdio-1.0
     hs-source-dirs: benchmarks
     main-is: bench.hs
-    ghc-options: -O2 -Wall
-    Build-Depends:
-        base ^>= 4.12 || ^>= 4.13 || ^>= 4.14 || ^>= 4.15
-      , criterion ^>= 1.5
-      , invert
+    ghc-options: -O2
+    build-depends: invert
+    build-depends: criterion ^>= 1.5
