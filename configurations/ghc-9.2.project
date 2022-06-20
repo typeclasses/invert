@@ -3,3 +3,4 @@ packages: ./invert.cabal
 constraints:
     base == 4.16.*
   , hashable == 1.4.*
+  , vector == 0.13.*
