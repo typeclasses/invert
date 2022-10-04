@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        ghc: ['8.6', '8.8', '8.10', '9.0', '9.2']
+        ghc: ['8.6', '8.8', '8.10', '9.0', '9.2', '9.4']
         os: ['ubuntu-latest']
 
     steps:
@@ -27,7 +27,7 @@ jobs:
               ${{ runner.os }}-${{ matrix.ghc }}-
               ${{ runner.os }}-
 
-      - uses: haskell/actions/setup@v1
+      - uses: haskell/actions/setup@v2
         with:
           ghc-version: ${{ matrix.ghc }}
 
