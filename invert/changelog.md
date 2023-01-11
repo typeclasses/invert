@@ -1,5 +1,7 @@
 ### 1.0.0.3 (2023-01-11)
 
+Packaging and documentation improvement
+
 ### 1.0.0.2 (2022-03-15)
 
 - Add support for base 4.16 (ghc 9.2)
