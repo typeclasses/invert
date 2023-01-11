@@ -2,28 +2,22 @@
 
 module Invert
   (
-    -- * Overview
-    -- $overview
+    {- * Overview -} {- $overview -}
 
-    -- * 1. Varieties of function
-    function, bijection, injection, surjection,
+    {- * 1. Varieties of function -}
+            function, bijection, injection, surjection,
 
-    -- * 2. Inversion strategies
-    linearSearchLazy, linearSearchStrict, binarySearch, hashTable,
+    {- * 2. Inversion strategies -} linearSearchLazy,
+            linearSearchStrict, binarySearch, hashTable,
 
-    -- * 3. Domain enumeration
-    enumBounded, genum,
+    {- * 3. Domain enumeration -} enumBounded, genum,
 
-    -- * The Strategy type
-    Strategy,
-    -- $strategyCreation
-    strategyAll, strategyOneAndAll,
+    {- * The Strategy type -} Strategy, {- $strategyCreation -}
+            strategyAll, strategyOneAndAll,
 
-    -- * Re-exports
-    -- $reexports
-    module Invert.Reexport
-
-  ) where
+    {- * Re-exports -} {- $reexports -} module Invert.Reexport,
+  )
+  where
 
 import Invert.Reexport
 
