@@ -1,8 +1,7 @@
 cabal-version: 3.0
 
 name: invert
-version: 1.0.0.2
-x-revision: 3
+version: 1.0.0.3
 synopsis: Automatically generate a function’s inverse
 category: Functions
 
