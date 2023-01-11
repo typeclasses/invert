@@ -39,7 +39,7 @@ common base
     default-language: Haskell2010
     ghc-options: -Wall
     build-depends:
-        base ^>= 4.12 || ^>= 4.13 || ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17
+      , base ^>= 4.12 || ^>= 4.13 || ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17
       , containers ^>= 0.6
       , hashable ^>= 1.2.7 || ^>= 1.3 || ^>= 1.4
       , unordered-containers ^>= 0.2.9
@@ -48,20 +48,25 @@ common base
 
 library
     import: base
-    exposed-modules: Invert, Invert.Reexport
-    other-modules: Map, Vector
+    exposed-modules:
+        Invert
+        Invert.Reexport
+    other-modules:
+        Map
+        Vector
     hs-source-dirs: src
     default-extensions:
         NoImplicitPrelude
-      , NamedFieldPuns
-      , ExistentialQuantification
+        NamedFieldPuns
+        ExistentialQuantification
 
 test-suite billing-codes-example
     import: base
     type: exitcode-stdio-1.0
     main-is: billing-codes.hs
     hs-source-dirs: examples
-    build-depends: invert
+    build-depends:
+      , invert
 
 benchmark invert-benchmark
     import: base
@@ -70,5 +75,6 @@ benchmark invert-benchmark
     hs-source-dirs: benchmarks
     main-is: bench.hs
     ghc-options: -O2
-    build-depends: invert
-    build-depends: criterion ^>= 1.5 || ^>= 1.6
+    build-depends:
+      , invert
+      , criterion ^>= 1.5 || ^>= 1.6
