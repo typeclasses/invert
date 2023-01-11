@@ -94,7 +94,7 @@ application has a linear correspondence with the size of the domain.
     of tuples, one for each value of the domain.
 
   * 'linearSearchLazy' precomputes nothing at all.
-    It is possible to use this stategy when the domain is infinite.
+    It is possible to use this strategy when the domain is infinite.
 
 Our other two strategies, 'binarySearch' and 'hashTable',
 work by building data structures that allow more efficient lookups.
@@ -102,7 +102,7 @@ work by building data structures that allow more efficient lookups.
   * 'binarySearch' precomputes a binary search tree;
     the codomain must belong to the 'Ord' class.
 
-  * 'hashTable' precomputers a hash table;
+  * 'hashTable' precomputes a hash table;
     the codomain must belong to the 'Hashable' class.
 
 The 'Hashable' class comes from "Data.Hashable" in the @hashable@ package.
@@ -227,7 +227,7 @@ mapStrategy one all = Strategy (f one) (f all)
 {- |
 
     A function inversion strategy that precomputes nothing at all.
-    It is possible to use this stategy when the domain is infinite.
+    It is possible to use this strategy when the domain is infinite.
 
 -}
 
@@ -239,7 +239,7 @@ linearSearchLazy = Strategy one all
 
 {- |
 
-    A function inversation strategy that works by precomputing a
+    A function inversion strategy that works by precomputing a
     strict sequence of tuples, one for each value of the domain.
 
     For larger functions, it may be preferable to use 'binarySearch' or
