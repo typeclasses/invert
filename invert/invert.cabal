@@ -26,8 +26,6 @@ description:
     so a user hesitant to incur a dependency on the package might
     well choose only to read and borrow its techniques.
 
-build-type: Simple
-
 author:     Chris Martin
 maintainer: Chris Martin, Julie Moronuki
 
