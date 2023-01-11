@@ -26,20 +26,20 @@ import Map (Map (Map))
 
 import qualified Vector
 
-import Data.Eq            ( Eq, (==) )
-import Data.Foldable      ( foldl' )
-import Data.Function      ( (.) )
-import Data.List.NonEmpty ( NonEmpty, nonEmpty )
-import Data.Maybe         ( Maybe (Just, Nothing), fromMaybe, listToMaybe )
-import Data.Ord           ( Ord )
-import Data.Tuple         ( uncurry )
-import Prelude            ( error )
-import Prelude            ( Enum, enumFromTo )
-import Prelude            ( Bounded, minBound, maxBound )
+import Data.Eq (Eq, (==))
+import Data.Foldable (foldl')
+import Data.Function ((.))
+import Data.List.NonEmpty (NonEmpty, nonEmpty)
+import Data.Maybe (Maybe (Just, Nothing), fromMaybe, listToMaybe)
+import Data.Ord (Ord)
+import Data.Tuple (uncurry)
+import Prelude (error)
+import Prelude (Enum, enumFromTo)
+import Prelude (Bounded, minBound, maxBound)
 
-import qualified Data.List         as List  ( lookup, map )
-import qualified Data.Maybe        as List  ( mapMaybe )
-import qualified Generics.Deriving as GEnum ( genum )
+import qualified Data.List as List (lookup, map)
+import qualified Data.Maybe as List (mapMaybe)
+import qualified Generics.Deriving as GEnum (genum)
 
 {- $overview
 
