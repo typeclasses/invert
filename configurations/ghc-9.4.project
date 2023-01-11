@@ -1,4 +1,0 @@
-packages: ./invert.cabal
-
-constraints:
-    base == 4.17.*
