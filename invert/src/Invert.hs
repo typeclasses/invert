@@ -118,9 +118,7 @@ We offer two suggestions for automatically producing this list:
 The 'Generic' class comes from "GHC.Generics", and the 'GEnum' class
 comes from "Generics.Deriving" in the @generic-deriving@ package.
 Both classes are re-exported by "Invert", which you may find convenient
-if your primary motivation for deriving 'GEnum' is to invert a function.
-
--}
+if your primary motivation for deriving 'GEnum' is to invert a function. -}
 
 function ::
     Strategy a b
@@ -171,16 +169,11 @@ bijection (Strategy s _) as f = finagle . s (inverseEntries as f)
 surjection (Strategy _ s) as f = finagle . s (inverseEntries as f)
   where finagle = fromMaybe (error "Not a surjection!") . nonEmpty
 
-{- |
+{-| An inversion strategy is an approach for producing
+    the inverse of an @(a -> b)@ function
 
-    An inversion strategy is an approach for producing
-    the inverse of an @(a -> b)@ function.
-
-    All strategies produce the same results, but they
-    have operational differences that affect performance.
-
--}
-
+All strategies produce the same results, but they
+have operational differences that affect performance. -}
 data Strategy a b =
   Strategy
     ([(b, a)] -> b -> Maybe a)
@@ -188,13 +181,11 @@ data Strategy a b =
 
 {- $strategyCreation
 
-    === Defining your own strategies
+=== Defining your own strategies
 
-    If you want to design your own strategy instead
-    of using one provided by this module, use either
-    'strategyAll' or 'strategyOneAndAll'.
-
--}
+If you want to design your own strategy instead
+of using one provided by this module, use either
+'strategyAll' or 'strategyOneAndAll'. -}
 
 strategyAll ::
     ([(b, a)] -> b -> [a]) -- ^ Find all matches
@@ -218,29 +209,20 @@ mapStrategy one all = Strategy (f one) (f all)
     f Map{ Map.empty, Map.singleton, Map.union, Map.lookup } =
         lookup . foldl' union empty . List.map (uncurry singleton)
 
-{- |
+{-| A function inversion strategy that precomputes nothing at all
 
-    A function inversion strategy that precomputes nothing at all.
-    It is possible to use this strategy when the domain is infinite.
-
--}
-
+It is possible to use this strategy when the domain is infinite. -}
 linearSearchLazy :: Eq b => Strategy a b
 linearSearchLazy = Strategy one all
   where
     one bas b = List.lookup b bas
     all bas b = List.mapMaybe (sndIfFstEq b) bas
 
-{- |
+{-| A function inversion strategy that works by precomputing a
+    strict sequence of tuples, one for each value of the domain
 
-    A function inversion strategy that works by precomputing a
-    strict sequence of tuples, one for each value of the domain.
-
-    For larger functions, it may be preferable to use 'binarySearch' or
-    'hashTable' instead to get a more efficient inverse.
-
--}
-
+For larger functions, it may be preferable to use 'binarySearch' or
+'hashTable' instead to get a more efficient inverse. -}
 linearSearchStrict :: Eq b => Strategy a b
 linearSearchStrict = strategyAll f
   where
@@ -251,59 +233,53 @@ linearSearchStrict = strategyAll f
 sndIfFstEq :: Eq b => b -> (b, a) -> Maybe a
 sndIfFstEq x (b, a) = if b == x then Just a else Nothing
 
-{- |
+{-| A function inversion strategy that works by precomputing
+    a binary search tree
 
-    A function inversion strategy that works by precomputing
-    a binary search tree. The data structure imposes the
-    requirement that the codomain belongs to the 'Ord' class.
-
--}
-
+The data structure imposes the requirement that the codomain
+belongs to the 'Ord' class. -}
 binarySearch :: Ord b => Strategy a b
 binarySearch = mapStrategy Map.ordSingleMap Map.ordMultiMap
 
-{- |
+{-| A function inversion strategy that works by precomputing
+    a hash table
 
-    A function inversion strategy that works by precomputing
-    a hash table. The data structure imposes the requirement
-    that the codomain belongs to the 'Hashable' class.
-
--}
-
+The data structure imposes the requirement that the codomain
+belongs to the 'Hashable' class. -}
 hashTable :: (Eq b, Hashable b) => Strategy a b
 hashTable = mapStrategy Map.hashSingleMap Map.hashMultiMap
 
--- |
--- 'enumBounded' can be a convenient way to enumerate
--- the domain for a function that you want to invert.
--- It uses two stock-derivable classes, 'Enum' and 'Bounded'.
---
--- To derive the required typeclass instances, add the
--- following deriving clause to the type’s definition:
---
---   > deriving (Enum, Bounded)
---
+{-| A convenient way to enumerate the domain for a function that you
+want to invert, using the stock-derivable classes 'Enum' and 'Bounded'
 
+To derive the required typeclass instances, add the following deriving clause to
+the type’s definition:
+
+@
+deriving (Enum, Bounded)
+@ -}
 enumBounded :: (Enum a, Bounded a) => [a]
 enumBounded = enumFromTo minBound maxBound
 
--- |
--- 'genum' uses GHC generics; it requires deriving 'Generic'
--- and 'GEnum'. The 'Generic' class comes from "GHC.Generics",
--- and the 'GEnum' class comes from "Generics.Deriving" in the
--- @generic-deriving@ package.
---
--- To derive the required typeclass instances, enable the
--- following language extensions:
---
---   > {-# language DeriveGeneric, DeriveAnyClass, DerivingStrategies #-}
---
--- Then add the following deriving clauses to the type’s definition:
---
---   > deriving stock Generic
---   > deriving anyclass GEnum
---
+{-| Use GHC generics to enumerate a function's domain
 
+This requires deriving 'Generic' and 'GEnum'. The 'Generic' class comes
+from "GHC.Generics", and the 'GEnum' class comes from "Generics.Deriving"
+in the @generic-deriving@ package.
+
+To derive the required typeclass instances, enable the following
+language extensions:
+
+@
+\{\-# language DeriveGeneric, DeriveAnyClass, DerivingStrategies #\-\}
+@
+
+Then add the following deriving clauses to the type’s definition:
+
+@
+deriving stock Generic
+deriving anyclass GEnum
+@ -}
 genum :: GEnum a => [a]
 genum = GEnum.genum
 
@@ -316,6 +292,5 @@ other packages. These are here to let you conveniently derive
 List of re-exports:
 
   - __'Hashable'__ (for the 'hashTable' inversion strategy)
-  - __'Generic'__ and __'GEnum'__ (for the 'genum' domain enumeration approach)
-
--}
+  - __'Generic'__ and __'GEnum'__ (for the 'genum' domain
+    enumeration approach) -}
