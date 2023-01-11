@@ -1,8 +1,0 @@
-cradle:
-  cabal:
-    - path: "./src"
-      component: "lib:invert"
-    - path: "./examples"
-      component: "test:billing-codes-example"
-    - path: "./benchmarks"
-      component: "bench:invert-benchmark"
