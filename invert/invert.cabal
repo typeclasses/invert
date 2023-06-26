@@ -1,7 +1,7 @@
 cabal-version: 3.0
 
 name: invert
-version: 1.0.0.3
+version: 1.0.0.4
 synopsis: Automatically generate a function’s inverse
 category: Functions
 
@@ -23,14 +23,20 @@ license-file: license.txt
 extra-source-files: *.md
 
 common base
-    default-language: Haskell2010
+    default-language: GHC2021
     ghc-options: -Wall
+    default-extensions:
+        DeriveAnyClass
+        DerivingStrategies
+        ExistentialQuantification
+        NamedFieldPuns
+        NoImplicitPrelude
     build-depends:
-      , base ^>= 4.14 || ^>= 4.15 || ^>= 4.16 || ^>= 4.17
-      , containers ^>= 0.6.4
-      , hashable ^>= 1.3.5 || ^>= 1.4
-      , unordered-containers ^>= 0.2.17
-      , generic-deriving ^>= 1.14.1
+      , base ^>= 4.16 || ^>= 4.17 || ^>= 4.18
+      , containers ^>= 0.6.5
+      , hashable ^>= 1.4.2
+      , unordered-containers ^>= 0.2.19
+      , generic-deriving ^>= 1.14.4
       , vector ^>= 0.12.3 || ^>= 0.13
 
 library
@@ -42,10 +48,6 @@ library
         Map
         Vector
     hs-source-dirs: src
-    default-extensions:
-        NoImplicitPrelude
-        NamedFieldPuns
-        ExistentialQuantification
 
 test-suite billing-codes-example
     import: base
@@ -57,7 +59,6 @@ test-suite billing-codes-example
 
 benchmark invert-benchmark
     import: base
-    default-extensions: NumericUnderscores
     type: exitcode-stdio-1.0
     hs-source-dirs: benchmarks
     main-is: bench.hs

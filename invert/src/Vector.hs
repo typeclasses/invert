@@ -1,11 +1,10 @@
-{-# language Trustworthy #-}
+{-# LANGUAGE Trustworthy #-}
 
 module Vector (fromList, toList, mapMaybe) where
 
 import Data.Maybe (Maybe)
-
 import Data.Vector (Vector)
-import qualified Data.Vector as V
+import Data.Vector qualified as V
 
 fromList :: [a] -> Vector a
 fromList = V.fromList

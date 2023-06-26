@@ -1,3 +1,7 @@
+### 1.0.0.4 (2023-06-26)
+
+Raise language to GHC2021
+
 ### 1.0.0.3 (2023-01-11)
 
 Packaging and documentation improvement
