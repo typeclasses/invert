@@ -1,3 +1,7 @@
+### 1.0.0.5 (2025-01-20)
+
+Bump versions
+
 ### 1.0.0.4 (2023-06-26)
 
 Raise language to GHC2021
